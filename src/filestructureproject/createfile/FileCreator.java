@@ -82,7 +82,7 @@ public class FileCreator {
                 String data = String.valueOf(entry.getKey()) + "|" + String.valueOf(entry.getValue());
                 bw.write(data);
                 bw.newLine();
-                System.out.println(data);
+                //System.out.println(data);
             }
             bw.close();
             
@@ -123,25 +123,44 @@ public class FileCreator {
             Collections.sort(secondaryIndexList.get(j++));
         }*/
     
+    /**
+     * 
+     * 1 STEP: Loop through the fields
+     * 2 STEP: 
+     *          - Create a List of Secondary Index
+     *          - Loop through the Registers
+     * 3 STEP: 
+     *          - Check if the list already has the register
+     *              - If not, then add it to the list
+     *              - If so, then add it to the inverted list
+     * 
+     * 
+     */
     public void createSecondaryIndexAndInvertedList() {
         String[] fields = file.getFields();
         
         int j = 0;
+        // STEP 1
         for (int i=1; i<fields.length; i++) {
             System.out.println("field: " + fields[i]);
             
+            // STEP 2
             List<SecondaryIndex> secondaryIndex = new ArrayList<>();
             for (Register res: file.getRegisters()) {
                 SecondaryIndex si = new SecondaryIndex(res.getValue(i), 0);
                 //System.out.println("value: " + res.getValue(i));
+                
+                // STEP 3
                 if (secondaryIndex.size() > 0) {
                     if (!secondaryIndex.contains(si)) {
                         secondaryIndex.add(si);
                     } else {
+                        // Insert the repeated element in the inverted list
                         int pos = secondaryIndex.indexOf(si);
                         secondaryIndex.get(pos).addToInvertedList(Long.valueOf(res.getValue(0).trim()));
                     }
                 } else {
+                    // It will enter here only in the first time
                     secondaryIndex.add(si);
                 }
             }
@@ -149,12 +168,21 @@ public class FileCreator {
             int aux = j;
             //j++;
             Collections.sort(secondaryIndexList.get(j++));
-            System.out.println("");
             for (int z=0; z<secondaryIndexList.get(aux).size(); z++) {
-                System.out.println("IDK: " + secondaryIndexList.get(aux).get(z).getValue());
+                System.out.println(fields[i] + " - " + secondaryIndexList.get(aux).get(z).getValue());
             }
+            System.out.println("");
             
         }
+        /**
+         *  6 registros Arquivo
+         *  
+         *  campo: autor3
+         *  
+         *  0 - null ((1)null, (2)null, (3)null)
+         *  4 - Hochheiser
+         *  5 - Winckler
+         */
         
     }
     
