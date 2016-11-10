@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import static java.util.Collections.list;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -162,41 +163,38 @@ public class FileCreator {
             }
             
             List<SecondaryIndex> listOfSecondaryIndex = new ArrayList<>();
-            int counter =0;
+            int linha = 0;
             for (Register res: file.getRegisters()){     
-                SecondaryIndex si = new SecondaryIndex(res.getValue(i),counter++,new ListaLigada(Long.valueOf(res.getValue(0).trim())));
-
-                // STEP 3
-                if (listOfSecondaryIndex.size() > 0) {
-                    if (!listOfSecondaryIndex.contains(si)) {
+                SecondaryIndex si = new SecondaryIndex(res.getValue(i),linha++,new ListaLigada(Long.valueOf(res.getValue(0).trim())));
+                System.out.println(si.toString());
+                
+                for(SecondaryIndex siAux : listOfSecondaryIndex) {
+                    
+                    //Se o valorChave ainda não foi repetido
+                    if (!siAux.getChave().equals(si.getChave())){
                         listOfSecondaryIndex.add(si);
-                    } else {
-                        // Insert the repeated element in the inverted list
-                        int pos = listOfSecondaryIndex.indexOf(si);
-                        listOfSecondaryIndex.get(pos);
-                        
-                        ListaLigada novaLista = new ListaLigada(Long.valueOf(res.getValue(0).trim()),si.getRaiz().getRNN());
-                        
-                        si.inserirListaInicio(lista);
+                        System.out.println("AQUI ---->"+si);
                     }
-                } else {
-                    // It will enter here only if list is empty
-                    listOfSecondaryIndex.add(si);
+                }
+                
+
+                    
+                    
+                
+                }
 
             
-                }
-        /**
-         *  6 registros Arquivo
-         *  
-         *  campo: autor3
-         *  
-         *  0 - null ((1)null, (2)null, (3)null)
-         *  4 - Hochheiser
-         *  5 - Winckler
-         */
-        
-        }
+                
+                
+                
+
+                
+            }
+                
+               
+       }
     
+   
     
     
 }

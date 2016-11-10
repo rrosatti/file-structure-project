@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author rodri
  */
-public class SecondaryIndex{
+public class SecondaryIndex implements Comparable<SecondaryIndex>{
     
     private String valorDoCampo;
     private int rrn;
@@ -61,6 +61,22 @@ public class SecondaryIndex{
         
         return lista;
     }
+
+    @Override
+    public String toString() {
+        return "valorDoCampo=" + valorDoCampo + " rrn=" + rrn + ", raiz=" + raiz + '}';
+    }
+
+
+    @Override
+    public int compareTo(SecondaryIndex o) {
+         if(o.valorDoCampo == this.valorDoCampo)
+            return 1;
+         
+         return 0;
+    }
+    
+    
     
 
 }
