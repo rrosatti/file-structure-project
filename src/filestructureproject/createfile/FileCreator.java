@@ -161,35 +161,30 @@ public class FileCreator {
                 } catch (IOException ex) {}
             }
             
-            List<SecondaryIndex> secondaryIndex = new ArrayList<>();
-            for (Register res: file.getRegisters()) {
-                SecondaryIndex si = new SecondaryIndex(res.getValue(i), 0);
-                //System.out.println("value: " + res.getValue(i));
-                
+            List<SecondaryIndex> listOfSecondaryIndex = new ArrayList<>();
+            int counter =0;
+            for (Register res: file.getRegisters()){     
+                SecondaryIndex si = new SecondaryIndex(res.getValue(i),counter++,new ListaLigada(Long.valueOf(res.getValue(0).trim())));
+
                 // STEP 3
-                if (secondaryIndex.size() > 0) {
-                    if (!secondaryIndex.contains(si)) {
-                        secondaryIndex.add(si);
+                if (listOfSecondaryIndex.size() > 0) {
+                    if (!listOfSecondaryIndex.contains(si)) {
+                        listOfSecondaryIndex.add(si);
                     } else {
                         // Insert the repeated element in the inverted list
-                        int pos = secondaryIndex.indexOf(si);
-                        secondaryIndex.get(pos).addToInvertedList(Long.valueOf(res.getValue(0).trim()));
+                        int pos = listOfSecondaryIndex.indexOf(si);
+                        listOfSecondaryIndex.get(pos);
+                        
+                        ListaLigada novaLista = new ListaLigada(Long.valueOf(res.getValue(0).trim()),si.getRaiz().getRNN());
+                        
+                        si.inserirListaInicio(lista);
                     }
                 } else {
-                    // It will enter here only in the first time
-                    secondaryIndex.add(si);
-                }
-            }
-            secondaryIndexList.add(secondaryIndex);
-            int aux = j;
-            //j++;
-            Collections.sort(secondaryIndexList.get(j++));
-            for (int z=0; z<secondaryIndexList.get(aux).size(); z++) {
-                System.out.println(fields[i] + " - " + secondaryIndexList.get(aux).get(z).getValue());
-            }
-            System.out.println("");
+                    // It will enter here only if list is empty
+                    listOfSecondaryIndex.add(si);
+
             
-        }
+                }
         /**
          *  6 registros Arquivo
          *  
@@ -200,7 +195,7 @@ public class FileCreator {
          *  5 - Winckler
          */
         
-    }
+        }
     
     
     

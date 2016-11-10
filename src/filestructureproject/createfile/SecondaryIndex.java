@@ -6,69 +6,62 @@
 package filestructureproject.createfile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  *
  * @author rodri
  */
-public class SecondaryIndex implements Comparable<SecondaryIndex> {
+public class SecondaryIndex{
     
-    private String value;
+    private String valorDoCampo;
     private int rrn;
-    private List<Long> invertedList;
+    private ListaLigada raiz;
     
-    public SecondaryIndex() {
-        invertedList = new ArrayList<>();
-    }
-    
-    public SecondaryIndex(String value, int rrn) {
-        this();
-        this.value = value;
+    public SecondaryIndex(String valorDoCampo, int rrn) {
+        this.valorDoCampo = valorDoCampo;
         this.rrn = rrn;
+        this.raiz = null;
     }
-    
-    public void setRrn(int rrn) {
+
+    public SecondaryIndex(String valorDoCampo, int rrn, ListaLigada raiz) {
+        this.valorDoCampo = valorDoCampo;
         this.rrn = rrn;
+        this.raiz = raiz;
     }
-    
+
+    public String getChave() {
+        return valorDoCampo;
+    }
+
+    public void setChave(String chave) {
+        this.valorDoCampo = chave;
+    }
+
     public int getRrn() {
         return rrn;
     }
 
-    public String getValue() {
-        return value;
+    public void setRrn(int rrn) {
+        this.rrn = rrn;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-    
-    public void addToInvertedList(long primaryKey) {
-        invertedList.add(primaryKey);
-    }
-    
-    public List<Long> getInvertedList() {
-        return invertedList;
+    public ListaLigada getRaiz() {
+        return raiz;
     }
 
-    @Override
-    public int compareTo(SecondaryIndex o) {
-        //System.out.println("this.value: " + this.value + " o.value = " + o.getValue());
-        return this.value.compareTo(o.getValue());
+    public void setRaiz(ListaLigada raiz) {
+        this.raiz = raiz;
     }
+    
+    public ListaLigada inserirListaInicio(ListaLigada lista) {
+        lista.prox = raiz;
+        raiz = lista;
+        
+        return lista;
+    }
+    
 
-    @Override
-    public boolean equals(Object obj) {
-        SecondaryIndex si = (SecondaryIndex) obj;
-        if(compareTo(si) == 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    
-    
-    
 }
+   
