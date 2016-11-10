@@ -8,12 +8,15 @@ package filestructureproject.createfile;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -67,8 +70,11 @@ public class FileCreator {
     }
     
     private void createPrimaryIndexFile() {
+        
+        //Creating the primaryIndex file in the folder PrimaryIndex
         String primaryIndexFilename = file.getField(0) + ".txt";
-        File file = new File(new File("").getAbsolutePath() + "/" + primaryIndexFilename);
+        File file = new File(new File("").getAbsolutePath()+"\\PrimaryIndex\\"+ "/" + primaryIndexFilename);
+        file.getParentFile().mkdir();
         
         try {
             if (!file.exists()) {
@@ -129,6 +135,17 @@ public class FileCreator {
         int j = 0;
         for (int i=1; i<fields.length; i++) {
             System.out.println("field: " + fields[i]);
+            
+            //Creating the secondary Indexes files in the folder SecondaryIndex
+            String secondaryIndexFilename = fields[i]+ ".txt";
+            File f = new File(new File("").getAbsolutePath()+"\\SecondaryIndexes\\" + secondaryIndexFilename);
+            f.getParentFile().mkdir();
+            
+            if (!f.exists()) {
+                try {
+                    f.createNewFile();
+                } catch (IOException ex) {}
+            }
             
             List<SecondaryIndex> secondaryIndex = new ArrayList<>();
             for (Register res: file.getRegisters()) {
