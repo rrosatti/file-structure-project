@@ -1,6 +1,6 @@
-Design e avaliação de interfaces humano-computador|0
-Overview of the Brazilian Computer Society’s Council for Human-Computer Interaction (CEIHC)|2
-Research methods in human-computer interaction|1
-Scenario and Task Based Interview to Evaluate Usability of Computer Assisted Data Collection|3
-Semiotic engineering methods for scientific research in HCI|4
-Usability in Brazil|5
+Design e avaliação de interfaces humano-computador |0         
+Overview of the Brazilian Computer Society’s Counci|2         
+Research methods in human-computer interaction     |1         
+Scenario and Task Based Interview to Evaluate Usabi|3         
+Semiotic engineering methods for scientific researc|4         
+Usability in Brazil                                |5         

@@ -229,7 +229,14 @@ public class FileCreator {
                     // get(i-1) because the secondary list does not include the primary field
                     for (int j=0; j<secondaryIndexList.get(i-1).size(); j++) {
                         
-                        String data = secondaryIndexList.get(i-1).get(j).getValue() + "|" + secondaryIndexList.get(i-1).get(j).getRrn();
+                        //build the data with fixed number
+                        String data = secondaryIndexList.get(i-1).get(j).getValue();
+                               data = fillString(data,50);
+                        String data2="|" + secondaryIndexList.get(i-1).get(j).getRrn();
+                               data2 = fillString(data2,10);
+                        
+                               
+                        data+=data2;
                         //System.out.println("data: " + data);
                         bw.write(data);
                         bw.newLine();
@@ -240,7 +247,13 @@ public class FileCreator {
                     BufferedWriter bw2 = new BufferedWriter(fw2);
                     
                     for (int j=0; j<invertedList.get(i-1).size(); j++) {
-                        String data = invertedList.get(i-1).get(j).getValue() + "|" + invertedList.get(i-1).get(j).getRrn();
+                        String data = invertedList.get(i-1).get(j).getValue();
+                               data = fillString(data,50);
+                        String data2="|" + invertedList.get(i-1).get(j).getRrn();
+                               data2 = fillString(data2,10);
+                        
+                        
+                        data+=data2;       
                         //System.out.println("data: " + data);
                         bw2.write(data);
                         bw2.newLine();
@@ -251,6 +264,16 @@ public class FileCreator {
             }
             
          }
-    }  
+    }
+    
+    public static String fillString(String str, int leng) {
+        if(str.length() <= leng)
+            for (int i = str.length(); i <= leng; i++)
+                str += " ";
+        else
+           str = str.substring(0,leng+1);
+        
+        return str;
+    }
     
 }
