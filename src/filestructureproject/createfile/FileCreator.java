@@ -75,8 +75,7 @@ public class FileCreator {
         
         //Creating the primaryIndex file in the folder PrimaryIndex
         String primaryIndexFilename = file.getField(0) + ".txt";
-        File file = new File(new File("").getAbsolutePath()+"\\PrimaryIndex\\"+ "/" + primaryIndexFilename);
-        file.getParentFile().mkdir();
+        File file = new File(new File("").getAbsolutePath()+ "/" +primaryIndexFilename);
         
         try {
             if (!file.exists()) {
@@ -87,7 +86,10 @@ public class FileCreator {
             BufferedWriter bw = new BufferedWriter(fw);
             
             for (Map.Entry<Long, Integer> entry: primaryIndex.entrySet()) {
-                String data = String.valueOf(entry.getKey()) + "|" + String.valueOf(entry.getValue());
+                //String data = String.valueOf(entry.getKey()) + "|" + String.valueOf(entry.getValue());
+                String pk = String.valueOf(entry.getKey());
+                String address = String.valueOf(entry.getValue());
+                String data = fillString(pk, 50) + "|" + fillString(address, 10);
                 bw.write(data);
                 bw.newLine();
                 //System.out.println(data);
