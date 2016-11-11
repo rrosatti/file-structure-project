@@ -27,12 +27,13 @@ public class FileCreator {
     private TreeMap<Long, Integer> primaryIndex;
     private PFile file;
     private List<List<SecondaryIndex>> secondaryIndexList; // String(Field) / Integer(RRN)
+    private List<List<SecondaryIndex>> invertedList;
     //private List<TreeMap<Long, Integer>> invertedList; // Long(PrimaryKey) / Integer("Next")
     
     public FileCreator() {
         primaryIndex = new TreeMap<>();
         secondaryIndexList = new ArrayList<>();
-        //invertedList = new ArrayList<>();
+        invertedList = new ArrayList<>();
     }
     
     public void createFile(String fileContent) {
@@ -44,7 +45,7 @@ public class FileCreator {
             
             file = new PFile(registers.length-1);
             for (int i=0; i<registers.length; i++) {
-                //System.out.print(register[i]);
+                //System.out.print(registers[i] + "\n");
                 String[] fields = registers[i].split("\\|");
 
                 if (i == 0) {
@@ -151,57 +152,104 @@ public class FileCreator {
             System.out.println("field: " + fields[i]);
             
             //Creating the secondary Indexes files in the folder SecondaryIndex
-            String secondaryIndexFilename = fields[i]+ ".txt";
-            File f = new File(new File("").getAbsolutePath()+"\\SecondaryIndexes\\" + secondaryIndexFilename);
-            f.getParentFile().mkdir();
             
-            if (!f.exists()) {
-                try {
-                    f.createNewFile();
-                } catch (IOException ex) {}
-            }
             
+            int rrnCounter = 0;
             List<SecondaryIndex> secondaryIndex = new ArrayList<>();
+            List<SecondaryIndex> invertedListValues = new ArrayList<>();
             for (Register res: file.getRegisters()) {
-                SecondaryIndex si = new SecondaryIndex(res.getValue(i), 0);
+                SecondaryIndex si = new SecondaryIndex(res.getValue(i), rrnCounter++);
                 //System.out.println("value: " + res.getValue(i));
                 
                 // STEP 3
                 if (secondaryIndex.size() > 0) {
                     if (!secondaryIndex.contains(si)) {
                         secondaryIndex.add(si);
+                        // SecondaryIndex(Primary Key, Next RRN)
+                        invertedListValues.add(new SecondaryIndex(res.getValue(0), -1));
                     } else {
                         // Insert the repeated element in the inverted list
-                        int pos = secondaryIndex.indexOf(si);
-                        secondaryIndex.get(pos).addToInvertedList(Long.valueOf(res.getValue(0).trim()));
+                        int pos = secondaryIndex.indexOf(si); // get position of the element in secondary index
+                        SecondaryIndex aux = secondaryIndex.get(pos); // get its object
+                        int rrn = aux.getRrn(); // get its rrn
+                        // SecondaryIndex(Primary Key, RRN of )
+                        invertedListValues.add(new SecondaryIndex(res.getValue(0), rrn));
+                        aux.setRrn(rrnCounter-1); // counter - 1;
+                        //secondaryIndex.get(pos).addToInvertedList(Long.valueOf(res.getValue(0).trim()));
                     }
                 } else {
                     // It will enter here only in the first time
                     secondaryIndex.add(si);
+                    invertedListValues.add(new SecondaryIndex(res.getValue(0), -1));
                 }
             }
             secondaryIndexList.add(secondaryIndex);
+            invertedList.add(invertedListValues);
             int aux = j;
             //j++;
             Collections.sort(secondaryIndexList.get(j++));
+            /**
+            System.out.println("Secondary Index");
             for (int z=0; z<secondaryIndexList.get(aux).size(); z++) {
-                System.out.println(fields[i] + " - " + secondaryIndexList.get(aux).get(z).getValue());
+                System.out.println(fields[i] + " - " + secondaryIndexList.get(aux).get(z).getValue()
+                + " rrn: " + secondaryIndexList.get(aux).get(z).getRrn());
             }
             System.out.println("");
+            System.out.println("Inverted List");
+            for (int w=0; w<invertedList.get(aux).size(); w++) {
+                System.out.println(fields[i] + " - " + invertedList.get(aux).get(w).getValue()
+                + " rrn: " + invertedList.get(aux).get(w).getRrn());
+            }
+            System.out.println("");*/
             
         }
-        /**
-         *  6 registros Arquivo
-         *  
-         *  campo: autor3
-         *  
-         *  0 - null ((1)null, (2)null, (3)null)
-         *  4 - Hochheiser
-         *  5 - Winckler
-         */
+        createFiles();
         
     }
     
-    
+    public void createFiles() {
+        String[] fields = file.getFields();
+        
+         for (int i=1; i<fields.length; i++) {
+            String secondaryIndexFilename = fields[i]+ ".txt";
+            String invertedListFilename = fields[i]+ "_IL.txt";
+            File f = new File(new File("").getAbsolutePath()+"\\SecondaryIndexes\\" + secondaryIndexFilename);
+            File f2 = new File(new File("").getAbsolutePath()+"\\SecondaryIndexes\\" + invertedListFilename);
+            f.getParentFile().mkdir();
+            
+            if (!f.exists()) {
+                try {
+                    f.createNewFile();
+                    f2.createNewFile();
+                    
+                    FileWriter fw = new FileWriter(f.getAbsoluteFile());
+                    BufferedWriter bw = new BufferedWriter(fw);
+                    
+                    // get(i-1) because the secondary list does not include the primary field
+                    for (int j=0; j<secondaryIndexList.get(i-1).size(); j++) {
+                        
+                        String data = secondaryIndexList.get(i-1).get(j).getValue() + "|" + secondaryIndexList.get(i-1).get(j).getRrn();
+                        //System.out.println("data: " + data);
+                        bw.write(data);
+                        bw.newLine();
+                    }
+                    bw.close();
+                    
+                    FileWriter fw2 = new FileWriter(f2.getAbsoluteFile());
+                    BufferedWriter bw2 = new BufferedWriter(fw2);
+                    
+                    for (int j=0; j<invertedList.get(i-1).size(); j++) {
+                        String data = invertedList.get(i-1).get(j).getValue() + "|" + invertedList.get(i-1).get(j).getRrn();
+                        //System.out.println("data: " + data);
+                        bw2.write(data);
+                        bw2.newLine();
+                    }
+                    bw2.close();
+                    
+                } catch (IOException ex) {}
+            }
+            
+         }
+    }  
     
 }

@@ -6,6 +6,7 @@
 package filestructureproject;
 
 import filestructureproject.createfile.FileCreator;
+import filestructureproject.createfile.PFile;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -23,7 +24,11 @@ public class FileManager {
     }
     
     public void readFile(String name) {
-        if (areFilesAlreadyCreated()) return;
+        if (areFilesAlreadyCreated()) {
+            return;
+        } else {
+            searchRegisterByPK(name, "470723378");
+        }
         
         File dir = new File(new File("").getAbsolutePath());
         BufferedReader reader = null;
@@ -40,6 +45,39 @@ public class FileManager {
     
     public boolean areFilesAlreadyCreated() {
         return false;
+    }
+    
+    public void searchRegisterByPK(String indexName, String key) {
+        indexName = "ISBN";
+        File dir = new File(new File("").getAbsolutePath());
+        BufferedReader reader = null;
+        System.out.println("dir: " + dir);
+        
+        try {
+            reader = new BufferedReader(new FileReader(new File(dir, indexName + ".txt")));
+            String line = reader.readLine();
+            System.out.println(line);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // C:\Users\rodri\OneDrive\Documentos\NetBeansProjects\FileStructureProject\PrimaryIndex
+            // C:\Users\rodri\OneDrive\Documentos\NetBeansProjects\FileStructureProject\PrimaryIndex\ISBN.txt
+        }
+        
+    }
+    
+    public void searchRegister(String indexName, String registerKey) {
+        indexName = "Ano";
+        File dir = new File(new File("").getAbsolutePath());
+        BufferedReader reader = null;
+        
+        try {
+            reader = new BufferedReader(new FileReader(new File(dir, "/SecondaryIndex/" + indexName + ".txt")));
+            String line = reader.readLine();
+            fileCreator.createFile(line);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
     
 }

@@ -16,10 +16,10 @@ public class SecondaryIndex implements Comparable<SecondaryIndex> {
     
     private String value;
     private int rrn;
-    private List<Long> invertedList;
+    //private List<Long> invertedList;
     
     public SecondaryIndex() {
-        invertedList = new ArrayList<>();
+        //invertedList = new ArrayList<>();
     }
     
     public SecondaryIndex(String value, int rrn) {
@@ -45,11 +45,12 @@ public class SecondaryIndex implements Comparable<SecondaryIndex> {
     }
     
     public void addToInvertedList(long primaryKey) {
-        invertedList.add(primaryKey);
+        //invertedList.add(primaryKey);
     }
     
     public List<Long> getInvertedList() {
-        return invertedList;
+        //return invertedList;
+        return null;
     }
 
     @Override
