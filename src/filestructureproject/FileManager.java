@@ -59,8 +59,6 @@ public class FileManager {
             System.out.println(line);
         } catch (Exception e) {
             e.printStackTrace();
-            // C:\Users\rodri\OneDrive\Documentos\NetBeansProjects\FileStructureProject\PrimaryIndex
-            // C:\Users\rodri\OneDrive\Documentos\NetBeansProjects\FileStructureProject\PrimaryIndex\ISBN.txt
         }
         
     }
