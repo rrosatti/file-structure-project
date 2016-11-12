@@ -23,10 +23,10 @@ public class FileStructureProject {
         // TODO code application logic here
         
         /*OldFileManager manager = new OldFileManager();
-        manager.readFile("file1.txt");*/
+        manager.createOrRead("file1.txt");*/
         
         FileManager manager = new FileManager();
-        manager.readFile("file1.txt");
+        manager.createOrRead("file1.txt");
         
         int op = -1;
         System.out.println("Options:");
@@ -39,17 +39,13 @@ public class FileStructureProject {
         
         switch (op) {
             case 1: {
-                System.out.println("Show Indexes");
+                manager.printIndexes(1);
                 break;
             }
 
             case 2: {
-                /*List<String> indexes = manager.getIndexesName();
-                System.out.println("Choose which field you want to use to search:");
-                for (int i=0; i<indexes.size(); i++) {
-                    System.out.println("\t2."+ i + " - " + indexes.get(i));
-                }*/
-
+                System.out.println("\nSelect an index: ");
+                manager.printIndexes(2);
                 break;
             }
 

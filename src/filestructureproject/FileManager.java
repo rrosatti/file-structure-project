@@ -18,37 +18,65 @@ import java.io.RandomAccessFile;
  */
 public class FileManager {
     
-    FileCreator fileCreator;
-    String filename = "";
+    private FileCreator fileCreator;
+    private String filename = "";
+    private String fields[];
     
     public FileManager() {
         fileCreator = new FileCreator();
     }
     
-    public void readFile(String name) {
+    public void createOrRead(String name) {
         filename = name;
-        if (areFilesAlreadyCreated()) {
-            searchRegisterByPK(name, "470723378");
-        } else {
-            //searchRegisterByPK(name, "470723378");
-                
-            File dir = new File(new File("").getAbsolutePath());
-            BufferedReader reader = null;
+               
+        File dir = new File(new File("").getAbsolutePath());
+        BufferedReader reader = null;
 
-            try {
-                reader = new BufferedReader(new FileReader(new File(dir, name)));
-                String line = reader.readLine();
-                fileCreator.createFile(line);
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            reader = new BufferedReader(new FileReader(new File(dir, name)));
+            String line = reader.readLine();
+
+            if (areFilesAlreadyCreated()) {
+                //searchRegisterByPK(name, "470723378");
+                getIndexes(line);
+            } else { 
+                fileCreator.createFiles(line);
+                getIndexes(line);
             }
-            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
                 
     }
     
     public boolean areFilesAlreadyCreated() {
         return true;
+    }
+    
+    public void getIndexes(String content) {
+        
+        if (content != null) {
+            String[] registers = content.split("#");
+            // it will take only the values referring to the indexes
+            fields = registers[0].split("\\|");
+        }
+        
+    }
+    
+    public void printIndexes(int op) {
+        if (op == 1) {
+            System.out.print("| ");
+            for (int i=0; i<fields.length; i++) {
+                System.out.print(fields[i] + " | ");
+            }
+            System.out.println("");
+        } else if (op == 2) {
+            for (int i=0; i<fields.length; i++) {
+                System.out.println(i + ": " + fields[i]);
+            }
+        }
+        
     }
     
     public void searchRegisterByPK(String indexName, String key) {
@@ -125,7 +153,7 @@ public class FileManager {
         try {
             reader = new BufferedReader(new FileReader(new File(dir, "/SecondaryIndex/" + indexName + ".txt")));
             String line = reader.readLine();
-            fileCreator.createFile(line);
+            fileCreator.createFiles(line);
         } catch (Exception e) {
             e.printStackTrace();
         }

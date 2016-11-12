@@ -37,7 +37,7 @@ public class FileCreator {
         invertedList = new ArrayList<>();
     }
     
-    public void createFile(String fileContent) {
+    public void createFiles(String fileContent) {
         
         if (fileContent != null) {
             String[] registers = fileContent.split("#");
@@ -206,7 +206,7 @@ public class FileCreator {
             System.out.println("");*/
             
         }
-        createFiles();
+        FileCreator.this.createFiles();
         
     }
     
