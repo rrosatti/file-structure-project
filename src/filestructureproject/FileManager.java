@@ -144,7 +144,9 @@ public class FileManager {
     public void insertRegister(String newRegister) {
         String registerName = "file1";
         newRegister = "9788588833030|Trabalho de estrutura de arquivos|Rodrigo Galvao|Rogerio Hirata |Luiz panicachi|2016#";
-
+        String[] valuesOfRegister = newRegister.split("\\|");
+        
+        
         //Insert(Append) the new register in the register file - Ok
         File dir = new File(new File("").getAbsolutePath());
         BufferedWriter writer = null;
@@ -178,13 +180,20 @@ public class FileManager {
         //insert the new register in the primary index
         RandomAccessFile file;
         try {
-            file = new RandomAccessFile(dir + "/" + Keys[0] + ".txt", "r");
+            //open file
+            file = new RandomAccessFile(dir + "/" + Keys[0] + ".txt", "rw");
             System.out.println(file.length());
-       
-        
-        
-        
-        
+            
+            //Insert in the end of the file
+            file.seek(file.length()-1);
+            System.out.println("valor-->"+valuesOfRegister[0]);
+            file.writeUTF(valuesOfRegister[0]);
+            file.close();
+
+            
+            //Locate the right position in the file
+            
+            //bubble sort all the file
         
         
         } catch (Exception e) {
