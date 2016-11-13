@@ -35,7 +35,7 @@ public class FileStructureProject {
         System.out.println("3 - Remove Register");
         Scanner scan = new Scanner(System.in);
         //op = scan.nextInt();
-        op=1;
+        op=2;
         
         switch (op) {
             case 1: {
@@ -46,6 +46,18 @@ public class FileStructureProject {
             case 2: {
                 System.out.println("\nSelect an index: ");
                 manager.printIndexes(2);
+                Scanner in = new Scanner(System.in);
+                int op2 = scan.nextInt();
+                if (op2 == 0) {
+                    // Ex: "3642237673";
+                    System.out.print("Search: ");
+                    String key = in.next();
+                    manager.searchRegisterByPK(key);
+                } else {
+                    System.out.print("Search: ");
+                    String key = in.next();
+                    manager.searchRegister(op2, key);
+                }
                 break;
             }
 

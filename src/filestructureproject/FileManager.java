@@ -57,7 +57,7 @@ public class FileManager {
     }
 
     public boolean areFilesAlreadyCreated() {
-        return true;
+        return false;
     }
     
     public void getIndexes(String content) {
@@ -85,14 +85,12 @@ public class FileManager {
         
     }
     
-    public void searchRegisterByPK(String indexName, String key) {
-        indexName = "﻿ISBN";
-        key = "3642237673";
+    public void searchRegisterByPK(String key) {
         long tempoInicial = System.currentTimeMillis();
         File dir = new File(new File("").getAbsolutePath());
 
         try {
-            RandomAccessFile file = new RandomAccessFile(dir + "/" + indexName + ".txt", "r");
+            RandomAccessFile file = new RandomAccessFile(dir + "/" + fields[0] + ".txt", "r");
             System.out.println("file: " + file.length());
 
             long start = 0;
@@ -101,7 +99,8 @@ public class FileManager {
             while (start <= end) {
                 long mid = start + (end - start) / 2;
                 file.seek(mid);
-                String pk = file.readLine().substring(0, 50).trim();
+                String line = file.readLine();
+                String pk = line.substring(0, 50).trim();
                 System.out.println("pk: " + pk);
                 if (key.compareTo(pk) < 0) {
                     end = mid - 64;
@@ -109,7 +108,7 @@ public class FileManager {
                 } else if (key.equalsIgnoreCase(pk)) {
                     //return 1;
                     // 52 because of the pipe '|'
-                    String address = file.readLine().substring(52).trim();
+                    String address = line.substring(52).trim();
                     String returnRegister = getRegister(address);
                     System.out.println(returnRegister);
                     System.out.println("2!");
@@ -140,7 +139,12 @@ public class FileManager {
             RandomAccessFile file = new RandomAccessFile(dir + "/" + filename, "r");
             long pos = Long.valueOf(address);
             file.seek(pos);
-            register = file.readLine();
+            //register = file.readLine();
+            int r;
+            while ((r = file.read()) != -1 && (char)r != '#') {
+                char ch = (char) r;
+                register += ch; 
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,19 +153,68 @@ public class FileManager {
         return register;
     }
 
-    public void searchRegister(String indexName, String registerKey) {
-        indexName = "Ano";
-        File dir = new File(new File("").getAbsolutePath());
-        BufferedReader reader = null;
-
+    public void searchRegister(int indexPos, String value) {
+        File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes");
+        
         try {
-            reader = new BufferedReader(new FileReader(new File(dir, "/SecondaryIndex/" + indexName + ".txt")));
-            String line = reader.readLine();
-            fileCreator.createFiles(line);
+            RandomAccessFile file = new RandomAccessFile(dir + "/" + fields[indexPos] + ".txt", "r");
+            System.out.println("file size: " + file.length());
+
+            long start = 0;
+            long end = file.length();
+
+            while (start <= end) {
+                long mid = start + (end - start) / 2;
+                //testing
+                mid = 64 * ((mid) / 64);
+                //
+                file.seek(mid);
+                System.out.println("mid: " + mid);
+                String line = file.readLine();
+                System.out.println("line: " + line);
+                String pk = line.substring(0, 50).trim();
+                System.out.println("pk: " + pk);
+                if (value.compareTo(pk) < 0) {
+                    end = mid - 64;
+                    System.out.println("1!");
+                } else if (value.equalsIgnoreCase(pk)) {
+                    //return 1;
+                    // 52 because of the pipe '|'
+                    String rrn = line.substring(52).trim();
+                    int pos = searchInInvertedList(indexPos, rrn);
+                    //String returnRegister = getRegister(address);
+                    //System.out.println(returnRegister);
+                    System.out.println("2!");
+                    return;
+                } else {
+                    start = mid + 64;
+                    System.out.println("3!");
+                }
+                
+            }
+
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+    
+    public int searchInInvertedList(int indexPos, String rrn) {
+        File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes");
+        
+        try {
+            RandomAccessFile file = new RandomAccessFile(dir + "/" + fields[indexPos] + "_IL.txt", "r");
+            System.out.println("file: " + file.length());
+            int intRrn = Integer.valueOf(rrn);
+            int pos = intRrn * 64;
+            file.seek(pos);
+            System.out.println("file: " + file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return -1;
     }
 
     public String[] getKeys(File file) {

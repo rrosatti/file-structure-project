@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import static java.util.Collections.list;
@@ -39,17 +40,20 @@ public class FileCreator {
     
     public void createFiles(String fileContent) {
         
+        fileContent = Normalizer.normalize(fileContent, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+        System.out.println(fileContent);
         if (fileContent != null) {
             String[] registers = fileContent.split("#");
             
             int count = 0;
             
-            file = new PFile(registers.length-1);
+            //file = new PFile(registers.length-1);
             for (int i=0; i<registers.length; i++) {
                 //System.out.print(registers[i] + "\n");
                 String[] fields = registers[i].split("\\|");
 
                 if (i == 0) {
+                    file = new PFile(fields.length);
                     for (int j=0; j<fields.length; j++) {
                         file.addField(fields[j]);
                     }
