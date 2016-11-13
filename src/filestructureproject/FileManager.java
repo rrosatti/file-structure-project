@@ -42,7 +42,7 @@ public class FileManager {
                 //searchRegisterByPK(name, "470723378");
                 getIndexes(line);
             } else { 
-                fileCreator.createFiles(line);
+                fileCreator.createFiles(filename, line);
                 getIndexes(line);
             }
         } catch (Exception e) {
@@ -91,11 +91,18 @@ public class FileManager {
 
             long start = 0;
             long end = file.length();
-
+            
             while (start <= end) {
                 long mid = start + (end - start) / 2;
+                
+                mid = 64 * ((mid) / 64);
+                if (mid == file.length()) 
+                    return;
+                //System.out.println("mid: " + mid);
                 file.seek(mid);
+                
                 String line = file.readLine();
+                //System.out.println("line: " + line);
                 String pk = line.substring(0, 50).trim();
                 System.out.println("pk: " + pk);
                 if (key.compareTo(pk) < 0) {
@@ -112,7 +119,6 @@ public class FileManager {
                 } else {
                     start = mid + 64;
                     System.out.println("3!");
-                    return;
                 }
 
             }
@@ -163,6 +169,8 @@ public class FileManager {
                 long mid = start + (end - start) / 2;
                 //testing
                 mid = 64 * ((mid) / 64);
+                if (mid == file.length()) 
+                    return;
                 //
                 file.seek(mid);
                 System.out.println("mid: " + mid);

@@ -26,7 +26,8 @@ import java.util.logging.Logger;
  */
 public class FileCreator {
     
-    private TreeMap<Long, Integer> primaryIndex;
+    private String filename = "";
+    private TreeMap<String, Integer> primaryIndex;
     private PFile file;
     private List<List<SecondaryIndex>> secondaryIndexList; // String(Field) / Integer(RRN)
     private List<List<SecondaryIndex>> invertedList;
@@ -38,10 +39,13 @@ public class FileCreator {
         invertedList = new ArrayList<>();
     }
     
-    public void createFiles(String fileContent) {
+    public void createFiles(String filename, String fileContent) {
+        this.filename = filename;
         
-        fileContent = Normalizer.normalize(fileContent, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
-        System.out.println(fileContent);
+        // remove all the accented characters
+        fileContent = replaceAccentedCharacters(fileContent);
+        
+        
         if (fileContent != null) {
             String[] registers = fileContent.split("#");
             
@@ -62,7 +66,7 @@ public class FileCreator {
                     res.setValues(fields);
                     res.setAddress(count);
                     file.addRegister(res);
-                    primaryIndex.put(Long.valueOf(fields[0].trim()), count);
+                    primaryIndex.put(fields[0].trim(), count);
                 }
                 count += registers[i].length() + 1;
 
@@ -72,6 +76,28 @@ public class FileCreator {
         
         createPrimaryIndexFile();
         createSecondaryIndexAndInvertedList();
+        
+    }
+    
+    /**
+     * Replace accented characters and replace original file with the changed content
+     * 
+     * @param content
+     * @return 
+     */
+    public String replaceAccentedCharacters(String content) {
+        content = Normalizer.normalize(content, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+        File f = new File(new File("").getAbsolutePath() + "/" + filename);
+        
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+            bw.write(content);
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return content;
         
     }
     
@@ -89,11 +115,14 @@ public class FileCreator {
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
             BufferedWriter bw = new BufferedWriter(fw);
             
-            for (Map.Entry<Long, Integer> entry: primaryIndex.entrySet()) {
+            for (Map.Entry<String, Integer> entry: primaryIndex.entrySet()) {
                 //String data = String.valueOf(entry.getKey()) + "|" + String.valueOf(entry.getValue());
-                String pk = String.valueOf(entry.getKey());
-                String address = String.valueOf(entry.getValue());
-                String data = fillString(pk, 50) + "|" + fillString(address, 10);
+                String pk = entry.getKey();
+                String address = "|" + String.valueOf(entry.getValue());
+                String data = fillString(pk, 50);
+                String data2 = fillString(address, 10);
+                data += data2;    
+                
                 bw.write(data);
                 bw.newLine();
                 //System.out.println(data);
@@ -156,7 +185,7 @@ public class FileCreator {
         int j = 0;
         // STEP 1
         for (int i=1; i<fields.length; i++) {
-            System.out.println("field: " + fields[i]);
+            //System.out.println("field: " + fields[i]);
             
             //Creating the secondary Indexes files in the folder SecondaryIndex
             
@@ -166,7 +195,7 @@ public class FileCreator {
             List<SecondaryIndex> invertedListValues = new ArrayList<>();
             for (Register res: file.getRegisters()) {
                 SecondaryIndex si = new SecondaryIndex(res.getValue(i), rrnCounter++);
-                System.out.println("value: " + res.getValue(i));
+                //System.out.println("value: " + res.getValue(i));
                 
                 // STEP 3
                 if (secondaryIndex.size() > 0) {
@@ -210,7 +239,7 @@ public class FileCreator {
             System.out.println("");*/
             
         }
-        FileCreator.this.createFiles();
+        createFiles();
         
     }
     
@@ -243,7 +272,6 @@ public class FileCreator {
                         
                                
                         data+=data2;
-                        //System.out.println("data: " + data);
                         bw.write(data);
                         bw.newLine();
                     }
