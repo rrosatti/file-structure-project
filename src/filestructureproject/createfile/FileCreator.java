@@ -42,14 +42,14 @@ public class FileCreator {
         if (fileContent != null) {
             String[] registers = fileContent.split("#");
             
-            int count = 0;
+            int count = 0;            
             
-            file = new PFile(registers.length-1);
             for (int i=0; i<registers.length; i++) {
                 //System.out.print(registers[i] + "\n");
                 String[] fields = registers[i].split("\\|");
 
                 if (i == 0) {
+                    file = new PFile(fields.length);
                     for (int j=0; j<fields.length; j++) {
                         file.addField(fields[j]);
                     }
@@ -147,7 +147,7 @@ public class FileCreator {
      * 
      */
     public void createSecondaryIndexAndInvertedList() {
-        String[] fields = file.getFields();
+    String[] fields = file.getFields();
         
         int j = 0;
         // STEP 1
@@ -162,7 +162,7 @@ public class FileCreator {
             List<SecondaryIndex> invertedListValues = new ArrayList<>();
             for (Register res: file.getRegisters()) {
                 SecondaryIndex si = new SecondaryIndex(res.getValue(i), rrnCounter++);
-                //System.out.println("value: " + res.getValue(i));
+                System.out.println("value: " + res.getValue(i));
                 
                 // STEP 3
                 if (secondaryIndex.size() > 0) {

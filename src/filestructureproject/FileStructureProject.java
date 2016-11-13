@@ -32,10 +32,10 @@ public class FileStructureProject {
         System.out.println("Options:");
         System.out.println("1 - Show Indexes"); // ?? - I don't know if it is necessary
         System.out.println("2 - Search for a Register"); // Submenu option with the avaiable indexes
-        System.out.println("3 - Remove Register");
+        System.out.println("3 - Insert Register");
         Scanner scan = new Scanner(System.in);
-        //op = scan.nextInt();
-        op=1;
+        op = scan.nextInt();
+        //op=1;
         
         switch (op) {
             case 1: {
@@ -50,7 +50,8 @@ public class FileStructureProject {
             }
 
             case 3: {
-                System.out.println("Remove a Register");
+                System.out.println("Insert a Register");
+                manager.insertRegister("");
                 break;
             }
 
