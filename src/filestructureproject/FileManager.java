@@ -6,17 +6,13 @@
 package filestructureproject;
 
 import filestructureproject.createfile.FileCreator;
-import filestructureproject.createfile.PFile;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  *
@@ -224,20 +220,27 @@ public class FileManager {
 
     public void insertRegister(String newRegister) {
         String registerName = "file1";
-        newRegister = "9788588833030|Trabalho de estrutura de arquivos|Rodrigo Galvao|Rogerio Hirata |Luiz panicachi|2016#";
+        newRegister = "1234588833030|Trabalho de estrutura de arquivos|Rodrigo Galvao|Rogerio Hirata |Luiz panicachi|2016#";
         String[] valuesOfRegister = newRegister.split("\\|");
         
         
-        //Insert(Append) the new register in the register file - Ok
+        //Insert(Append) the new register in the register file - Ok      
         File dir = new File(new File("").getAbsolutePath());
+        File fileName = new File(dir, "/" + registerName + ".txt");
+        
+
+        //get the last RRN address to write in the primary index file later
+        String Address = fileName.length()+"";
+        
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(new File(dir, "/" + registerName + ".txt"), true));
+            writer = new BufferedWriter(new FileWriter(fileName, true));
             writer.append(newRegister);
             writer.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+         
 
         //Get Keys Names
         BufferedReader reader = null;
@@ -263,15 +266,20 @@ public class FileManager {
         try {
             //open file
             file = new RandomAccessFile(dir + "/" + Keys[0] + ".txt", "rw");
-            System.out.println(file.length());
             
             //Insert in the end of the file
-            file.seek(file.length()-1);
-            System.out.println("valor-->"+valuesOfRegister[0]);
-            file.writeUTF(valuesOfRegister[0]);
+            
+            
+            //Insert in the seek position
+            file.seek(file.length());
+            System.out.println("valor-->"+valuesOfRegister[0]);       
+            String filledPK =      FileCreator.fillString(valuesOfRegister[0], 50);
+            String filledAddress = FileCreator.fillString(Address, 10);
+            file.writeBytes(filledPK+"|"+filledAddress);
+            System.out.println(filledPK+"|"+filledAddress);
             file.close();
 
-            
+            int totalRRN = 3;
             //Locate the right position in the file
             
             //bubble sort all the file
