@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.RandomAccessFile;
+import java.text.Normalizer;
 
 
 /**
@@ -81,13 +82,13 @@ public class FileManager {
         
     }
     
-    public void searchRegisterByPK(String key) {
-        long tempoInicial = System.currentTimeMillis();
+    public String searchRegisterByPK(String key) {
+        long startTime = System.currentTimeMillis();
         File dir = new File(new File("").getAbsolutePath());
 
         try {
             RandomAccessFile file = new RandomAccessFile(dir + "/" + fields[0] + ".txt", "r");
-            System.out.println("file: " + file.length());
+            //System.out.println("file size: " + file.length());
 
             long start = 0;
             long end = file.length();
@@ -97,44 +98,41 @@ public class FileManager {
                 
                 mid = 64 * ((mid) / 64);
                 if (mid == file.length()) 
-                    return;
-                //System.out.println("mid: " + mid);
+                    return "";
                 file.seek(mid);
                 
                 String line = file.readLine();
-                //System.out.println("line: " + line);
                 String pk = line.substring(0, 50).trim();
-                System.out.println("pk: " + pk);
                 if (key.compareTo(pk) < 0) {
                     end = mid - 64;
-                    System.out.println("1!");
+                    //System.out.println("1!");
                 } else if (key.equalsIgnoreCase(pk)) {
-                    //return 1;
                     // 52 because of the pipe '|'
                     String address = line.substring(52).trim();
                     String returnRegister = getRegister(address);
                     System.out.println(returnRegister);
-                    System.out.println("2!");
-                    return;
+                    //System.out.println("2!");
+                    start = end+1; // just to finish the while loop
+                    return address;
                 } else {
                     start = mid + 64;
-                    System.out.println("3!");
+                    //System.out.println("3!");
                 }
 
             }
 
-            //return -1;
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         // execução do método
-        System.out.println("o metodo executou em " + (System.currentTimeMillis() - tempoInicial));
+        System.out.println("PrimaryIndex: The method took " + (System.currentTimeMillis() - startTime) + " seconds.");
+        return "";
 
     }
 
     public String getRegister(String address) {
-        System.out.println("address: " + address);
+        //System.out.println("address: " + address);
         File dir = new File(new File("").getAbsolutePath());
         String register = "";
         try {
@@ -156,11 +154,12 @@ public class FileManager {
     }
 
     public void searchRegister(int indexPos, String value) {
+        long startTime = System.currentTimeMillis();
         File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes");
         
         try {
             RandomAccessFile file = new RandomAccessFile(dir + "/" + fields[indexPos] + ".txt", "r");
-            System.out.println("file size: " + file.length());
+            //System.out.println("file size: " + file.length());
 
             long start = 0;
             long end = file.length();
@@ -169,30 +168,28 @@ public class FileManager {
                 long mid = start + (end - start) / 2;
                 //testing
                 mid = 64 * ((mid) / 64);
-                if (mid == file.length()) 
-                    return;
-                //
+                if (mid == file.length()) {
+                    System.out.println("Testing");
+                    break;
+                }
                 file.seek(mid);
-                System.out.println("mid: " + mid);
                 String line = file.readLine();
-                System.out.println("line: " + line);
                 String pk = line.substring(0, 50).trim();
-                System.out.println("pk: " + pk);
+                
                 if (value.compareTo(pk) < 0) {
                     end = mid - 64;
-                    System.out.println("1!");
+                    //System.out.println("1!");
                 } else if (value.equalsIgnoreCase(pk)) {
-                    //return 1;
                     // 52 because of the pipe '|'
                     String rrn = line.substring(52).trim();
-                    int pos = searchInInvertedList(indexPos, rrn);
-                    //String returnRegister = getRegister(address);
-                    //System.out.println(returnRegister);
-                    System.out.println("2!");
-                    return;
+                    System.out.println("Results: ");
+                    searchInInvertedList(indexPos, rrn);
+                    //System.out.println("2!");
+                    //return;
+                    start = end+1; // just to finish the while loop
                 } else {
                     start = mid + 64;
-                    System.out.println("3!");
+                    //System.out.println("3!");
                 }
                 
             }
@@ -201,49 +198,72 @@ public class FileManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        System.out.println("SecondaryIndex: The method took " + (System.currentTimeMillis() - startTime) + " seconds.");
 
     }
     
-    public int searchInInvertedList(int indexPos, String rrn) {
+    public void searchInInvertedList(int indexPos, String rrn) {
+        long startTime = System.currentTimeMillis();
         File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes");
         
         try {
             RandomAccessFile file = new RandomAccessFile(dir + "/" + fields[indexPos] + "_IL.txt", "r");
-            System.out.println("file: " + file.length());
+            
             int intRrn = Integer.valueOf(rrn);
             int pos = intRrn * 64;
             file.seek(pos);
-            System.out.println("file: " + file);
+            String line = file.readLine();
+            String key = line.substring(0, 50).trim();
+            String next = line.substring(52).trim();
+            
+            searchRegisterByPK(key);
+            if (!next.equals("-1")) {
+                //System.out.println("key: " + key + " next: " + next);
+                searchInInvertedList(indexPos, next);
+            }
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
         
-        return -1;
+        System.out.println("InvertedList: The method took " + (System.currentTimeMillis() - startTime) + " seconds.");
     }
 
-    public String[] getKeys(File file) {
-
-        return null;
+    public String[] getFields() {
+        return fields;
     }
 
-    public void insertRegister(String newRegister) {
-        String registerName = "file1";
-        newRegister = "1234588833030|Trabalho de estrutura de arquivos|Rodrigo Galvao|Rogerio Hirata |Luiz panicachi|2016#";
-        String[] valuesOfRegister = newRegister.split("\\|");
+    public void insertRegister(String filename, String[] newRegister) {
+        //newRegister = "1234588833030|Trabalho de estrutura de arquivos|Rodrigo Galvao|Rogerio Hirata |Luiz panicachi|2016#";
+        newRegister = new String[]{"1234588833030", "Trabalho de estrutura de arquivos", "Rodrigo Galvao", "Rogerio Hirata",
+            "Luiz panicachi", "2016"};
+        //String[] valuesOfRegister = newRegister.split("\\|");
         
+        // add '|' and '#' to register;
+        String register = "";
+        for (int i=0; i<newRegister.length; i++) {
+            register += newRegister[i];
+            if (i == newRegister.length - 1) {
+                register += "#";
+            } else {
+                register += "|";
+            }
+        }
+        
+        register = replaceAccentedCharacters(register);
         
         //Insert(Append) the new register in the register file - Ok      
         File dir = new File(new File("").getAbsolutePath());
-        File fileName = new File(dir, "/" + registerName + ".txt");
+        //File fileName = new File(dir, "/" + filename);
         
-
         //get the last RRN address to write in the primary index file later
-        String Address = fileName.length()+"";
+        String Address = filename.length()+"";
         
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(fileName, true));
-            writer.append(newRegister);
+            writer = new BufferedWriter(new FileWriter(filename, true));
+            writer.append(register);
             writer.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -255,7 +275,7 @@ public class FileManager {
         String fileContent ="";
         String[] Keys = null;
         try {
-            reader = new BufferedReader(new FileReader(new File(dir, "/" + registerName + ".txt")));
+            reader = new BufferedReader(new FileReader(new File(dir, "/" + filename)));
             int r;
             while ((r = reader.read()) != -1 && (char)r != '#') {
                 char ch = (char) r;
@@ -280,8 +300,8 @@ public class FileManager {
             
             //Insert in the seek position
             file.seek(file.length());
-            System.out.println("valor-->"+valuesOfRegister[0]);       
-            String filledPK =      FileCreator.fillString(valuesOfRegister[0], 50);
+            System.out.println("valor-->"+newRegister[0]);       
+            String filledPK =      FileCreator.fillString(newRegister[0], 50);
             String filledAddress = FileCreator.fillString(Address, 10);
             file.writeBytes(filledPK+"|"+filledAddress);
             System.out.println(filledPK+"|"+filledAddress);
@@ -318,5 +338,97 @@ public class FileManager {
             }
         }
         
+    }
+    
+    public String replaceAccentedCharacters(String content) {     
+        content = Normalizer.normalize(content, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+        return content;
+    }
+    
+    public void removeRegister(String key) {
+        System.out.println("Register to be removed: ");
+        String address = searchRegisterByPK(key);
+        
+        if (address.isEmpty()) {
+            System.out.println("Register not found!");
+        } else {
+            String register = getRegister(address);
+            String removedRegister = "%" + register.substring(1);
+            System.out.println("removedRegister: " + removedRegister);
+
+            File dir = new File(new File("").getAbsolutePath());
+            // replace the old register by its "removed version" in file1.txt
+            try {
+                RandomAccessFile f = new RandomAccessFile(dir + "/" + filename, "rw");
+                f.seek(Long.valueOf(address));
+                f.writeBytes(removedRegister);
+                f.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Remove from PrimaryIndex
+            try {
+                //RandomAccessFile f2 = new RandomAccessFile(dir + fields[0] + ".txt", "rw");
+                removeFromPrimaryIndexFile(key);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        
+        
+    }
+    
+    public void removeFromPrimaryIndexFile(String key) {
+        File dir = new File(new File("").getAbsolutePath() + "/" + fields[0] + ".txt");
+        
+        try {
+            RandomAccessFile file = new RandomAccessFile(dir, "rw");
+            //System.out.println("file size: " + file.length());
+            
+            // Save the content of the file in allFile
+            BufferedReader br = new BufferedReader(new FileReader(dir));
+            String l = br.readLine();
+            StringBuffer completeFile = new StringBuffer();
+            while (l != null) {
+                completeFile.append(l+"\r\n");
+                l = br.readLine();
+            }
+            br.close();
+            //System.out.println(allFile);
+            
+            long start = 0;
+            long end = file.length();
+            
+            while (start <= end) {
+                long mid = start + (end - start) / 2;
+                
+                mid = 64 * ((mid) / 64);
+                if (mid == file.length()) 
+                    break;
+                file.seek(mid);
+                
+                String line = file.readLine();
+                String pk = line.substring(0, 50).trim();
+                if (key.compareTo(pk) < 0) {
+                    end = mid - 64;
+                } else if (key.equalsIgnoreCase(pk)) {
+                    // remove the found register of the StringBuffer (completeFile)
+                    completeFile.delete((int)mid, (int)mid+64);
+                    // re-write the file without the removed register
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(dir));
+                    bw.write(completeFile.toString());
+                    bw.close();
+                    start = end+1; // just to finish the while loop
+                } else {
+                    start = mid + 64;
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -33,9 +33,10 @@ public class FileStructureProject {
         System.out.println("1 - Show Indexes"); // ?? - I don't know if it is necessary
         System.out.println("2 - Search for a Register"); // Submenu option with the avaiable indexes
         System.out.println("3 - Insert Register");
+        System.out.println("4 - Remove Register");
         Scanner scan = new Scanner(System.in);
         //op = scan.nextInt();
-        op=2;
+        op=4;
         
         switch (op) {
             case 1: {
@@ -63,8 +64,21 @@ public class FileStructureProject {
 
             case 3: {
                 System.out.println("Insert a Register");
-                manager.insertRegister("");
+                String[] fields = manager.getFields();
+                String[] values = new String[fields.length];
+                Scanner in = new Scanner(System.in);
+                for (int i=0; i<fields.length; i++) {
+                    System.out.print(fields[i] + ": ");
+                    values[i] = in.nextLine();
+                }
+                //manager.insertRegister("file1.txt", values);
                 break;
+            }
+            case 4: {
+                System.out.print("Register primary key: ");
+                Scanner in = new Scanner(System.in);
+                String key = in.next();
+                manager.removeRegister(key);
             }
 
             default:
