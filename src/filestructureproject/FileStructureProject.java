@@ -53,10 +53,12 @@ public class FileStructureProject {
                     // Ex: "3642237673";
                     System.out.print("Search: ");
                     String key = in.next();
+                    System.out.println("Result: ");
                     manager.searchRegisterByPK(key);
                 } else {
                     System.out.print("Search: ");
                     String key = in.next();
+                    System.out.println("Result: ");
                     manager.searchRegister(op2, key);
                 }
                 break;

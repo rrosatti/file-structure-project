@@ -182,7 +182,6 @@ public class FileManager {
                 } else if (value.equalsIgnoreCase(pk)) {
                     // 52 because of the pipe '|'
                     String rrn = line.substring(52).trim();
-                    System.out.println("Results: ");
                     searchInInvertedList(indexPos, rrn);
                     //System.out.println("2!");
                     //return;
@@ -360,20 +359,18 @@ public class FileManager {
             // replace the old register by its "removed version" in file1.txt
             try {
                 RandomAccessFile f = new RandomAccessFile(dir + "/" + filename, "rw");
-                f.seek(Long.valueOf(address));
-                f.writeBytes(removedRegister);
+                //f.seek(Long.valueOf(address));
+                //f.writeBytes(removedRegister);
                 f.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             // Remove from PrimaryIndex
-            try {
-                //RandomAccessFile f2 = new RandomAccessFile(dir + fields[0] + ".txt", "rw");
-                removeFromPrimaryIndexFile(key);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            //removeFromPrimaryIndexFile(key);
+            
+            // Remove from SecondaryIndex and InvertedList
+            removeFromSecondaryIndexFile(register);
         }
         
         
@@ -387,16 +384,10 @@ public class FileManager {
             RandomAccessFile file = new RandomAccessFile(dir, "rw");
             //System.out.println("file size: " + file.length());
             
-            // Save the content of the file in allFile
-            BufferedReader br = new BufferedReader(new FileReader(dir));
-            String l = br.readLine();
+            // Save the content of the file in completeFile
+            
             StringBuffer completeFile = new StringBuffer();
-            while (l != null) {
-                completeFile.append(l+"\r\n");
-                l = br.readLine();
-            }
-            br.close();
-            //System.out.println(allFile);
+            completeFile = copyAllData(dir);
             
             long start = 0;
             long end = file.length();
@@ -417,9 +408,7 @@ public class FileManager {
                     // remove the found register of the StringBuffer (completeFile)
                     completeFile.delete((int)mid, (int)mid+64);
                     // re-write the file without the removed register
-                    BufferedWriter bw = new BufferedWriter(new FileWriter(dir));
-                    bw.write(completeFile.toString());
-                    bw.close();
+                    rewriteData(completeFile, dir);
                     start = end+1; // just to finish the while loop
                 } else {
                     start = mid + 64;
@@ -427,6 +416,122 @@ public class FileManager {
 
             }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void removeFromSecondaryIndexFile(String register) {
+        System.out.println(register);
+        String[] values = register.split("\\|");
+        for (int i=1; i<values.length; i++) {
+            File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes" + "/" + fields[i] + ".txt");
+            values[i] = FileCreator.fillString(values[i], 50).trim();   
+            System.out.println("value: " + values[i]);
+            try {
+                RandomAccessFile file = new RandomAccessFile(dir, "r");
+                //System.out.println("file size: " + file.length());
+
+                long start = 0;
+                long end = file.length();
+
+                while (start <= end) {
+                    long mid = start + (end - start) / 2;
+                    //testing
+                    mid = 64 * ((mid) / 64);
+                    if (mid == file.length()) {
+                        break;
+                    }
+                    file.seek(mid);
+                    String line = file.readLine();
+                    String pk = line.substring(0, 50).trim();
+                    System.out.println("pk: " + pk);
+                    if (values[i].compareTo(pk) < 0) {
+                        end = mid - 64;
+                    } else if (values[i].equalsIgnoreCase(pk)) {
+                        // 52 because of the pipe '|'
+                        String rrn = line.substring(52).trim();
+                        System.out.println("I've been here!");
+                        int pos = removeFromInvertedList(i, rrn, values[i]);
+                        if (pos == -1) {
+                            // Remove the register here
+                            StringBuffer buffer = new StringBuffer();
+                            buffer = copyAllData(dir);
+                            buffer.delete((int)mid, (int)mid+64);
+                            rewriteData(buffer, dir);
+                            
+                        }
+                        start = end+1; // just to finish the while loop
+                    } else {
+                        start = mid + 64;
+                    }
+
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    
+    public int removeFromInvertedList(int indexPos, String rrn, String key) {
+        File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes" +  "/" + fields[indexPos] + "_IL.txt");
+        
+        try {
+            RandomAccessFile file = new RandomAccessFile(dir, "r");
+            
+            int intRrn = Integer.valueOf(rrn);
+            int pos = intRrn * 64;
+            file.seek(pos);
+            String line = file.readLine();
+            String value = line.substring(0, 50).trim();
+            String next = line.substring(52).trim();
+            
+            if (!next.equals("-1")) {
+                //Remove here
+                // need to check if the key 
+                return 0;
+            } else {
+                // remove here and return -1
+                StringBuffer buffer = new StringBuffer();
+                buffer = copyAllData(dir);
+                buffer.delete(pos, pos+64);
+                rewriteData(buffer, dir);
+                return -1;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return -1;
+
+    }
+    
+    public StringBuffer copyAllData(File dir) {
+        StringBuffer buffer = new StringBuffer();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(dir));
+            String l = br.readLine();
+            while (l != null) {
+                buffer.append(l+"\r\n");
+                l = br.readLine();
+            }
+            br.close();    
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return buffer;
+    }
+    
+    public void rewriteData(StringBuffer buffer, File dir) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(dir));
+            bw.write(buffer.toString());
+            bw.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
