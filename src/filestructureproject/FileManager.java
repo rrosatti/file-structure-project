@@ -54,7 +54,11 @@ public class FileManager {
     }
 
     public boolean areFilesAlreadyCreated() {
-        return false;
+        File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes");
+        if (dir.exists())
+            return true;
+        else
+            return false;
     }
     
     public void getIndexes(String content) {
@@ -359,15 +363,15 @@ public class FileManager {
             // replace the old register by its "removed version" in file1.txt
             try {
                 RandomAccessFile f = new RandomAccessFile(dir + "/" + filename, "rw");
-                //f.seek(Long.valueOf(address));
-                //f.writeBytes(removedRegister);
+                f.seek(Long.valueOf(address));
+                f.writeBytes(removedRegister);
                 f.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             // Remove from PrimaryIndex
-            //removeFromPrimaryIndexFile(key);
+            removeFromPrimaryIndexFile(key);
             
             // Remove from SecondaryIndex and InvertedList
             removeFromSecondaryIndexFile(register);
@@ -429,7 +433,7 @@ public class FileManager {
             values[i] = FileCreator.fillString(values[i], 50).trim();   
             System.out.println("value: " + values[i]);
             try {
-                RandomAccessFile file = new RandomAccessFile(dir, "r");
+                RandomAccessFile file = new RandomAccessFile(dir, "rw");
                 //System.out.println("file size: " + file.length());
 
                 long start = 0;
@@ -452,7 +456,7 @@ public class FileManager {
                         // 52 because of the pipe '|'
                         String rrn = line.substring(52).trim();
                         System.out.println("I've been here!");
-                        int pos = removeFromInvertedList(i, rrn, values[i]);
+                        int pos = removeFromInvertedList(i, rrn, values[0]);
                         if (pos == -1) {
                             // Remove the register here
                             StringBuffer buffer = new StringBuffer();
@@ -460,6 +464,10 @@ public class FileManager {
                             buffer.delete((int)mid, (int)mid+64);
                             rewriteData(buffer, dir);
                             
+                        } else if (pos != 0) {
+                            // change rrn in the secondary index file
+                            file.seek(mid+52);
+                            file.writeBytes(String.valueOf(pos));
                         }
                         start = end+1; // just to finish the while loop
                     } else {
@@ -476,11 +484,38 @@ public class FileManager {
         }
     }
     
+    /**
+     * 3 possible situations
+     * 
+     * Ex:  Ano - 2011
+     * 
+     * 2011 ->   5
+     * 
+     *   key    next   rrn
+     * ..039 ->  3      5
+     * ..074 ->  2      3
+     * ..673 -> -1      2
+     * 
+     * 1 - Remove 039
+     *      2011 starts pointing to the next element. So: 2011 -> 3
+     * 
+     * 2 - Remove 074
+     *      039(previous element) starts pointing to 673(next element). So: 039 -> 2
+     * 
+     * 3 - Remove 673
+     *      074(previous element) starts pointing to -1. So: 074 -> -1
+     * 
+     * 
+     * @param indexPos
+     * @param rrn
+     * @param key
+     * @return 
+     */
     public int removeFromInvertedList(int indexPos, String rrn, String key) {
         File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes" +  "/" + fields[indexPos] + "_IL.txt");
         
         try {
-            RandomAccessFile file = new RandomAccessFile(dir, "r");
+            RandomAccessFile file = new RandomAccessFile(dir, "rw");
             
             int intRrn = Integer.valueOf(rrn);
             int pos = intRrn * 64;
@@ -489,9 +524,59 @@ public class FileManager {
             String value = line.substring(0, 50).trim();
             String next = line.substring(52).trim();
             
+            System.out.println("key: " + key + " value: " + value);
             if (!next.equals("-1")) {
                 //Remove here
-                // need to check if the key 
+                // need to find the given key
+                StringBuffer buffer = new StringBuffer();
+                if (key.equals(value)) {
+                    // 1st situation
+                    // replace the removed line with blank spaces
+                    buffer = copyAllData(dir);
+                    buffer.replace(intRrn*64, intRrn*64 + 64, FileCreator.fillString("", 62) + "\r\n");
+                    rewriteData(buffer, dir);
+                    return Integer.valueOf(next);
+                } else {
+                    int previous = intRrn;
+                    while (!next.equals("-1")) {
+                        int intNext = Integer.valueOf(next);
+                        file.seek(intNext*64);
+                        line = file.readLine();
+                        value = line.substring(0, 50).trim();
+                        next = line.substring(52).trim();
+                        
+                        // 3rd situation
+                        if (next.equals("-1")) {
+                            // seek to the rrn position in the file
+                            file.seek(previous*64 + 52);
+                            // the previous element must point to -1
+                            file.writeBytes("-1");
+                            // replace the removed line with blank spaces
+                            buffer = copyAllData(dir);
+                            buffer.replace(intNext*64, intNext*64 + 64, FileCreator.fillString("", 62) + "\r\n");
+                            rewriteData(buffer, dir);
+                            return 0;
+                        } else {
+                            // 2nd situation
+                            if (key.equals(value)) {
+                                // the previous must point to the next
+                                file.seek(intNext*64);
+                                line = file.readLine();
+                                next = line.substring(52).trim();
+                                // seek to the rrn position in the file
+                                file.seek(previous*64 + 52);
+                                file.writeBytes(next);
+                                // replace the removed line with blank spaces
+                                buffer = copyAllData(dir);
+                                buffer.replace(intNext*64, intNext*64 + 64, FileCreator.fillString("", 62) + "\r\n");
+                                rewriteData(buffer, dir);
+                                return 0;
+                            }
+                        }
+                        previous = intNext;
+                        
+                    }
+                }
                 return 0;
             } else {
                 // remove here and return -1

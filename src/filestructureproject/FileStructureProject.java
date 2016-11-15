@@ -34,11 +34,14 @@ public class FileStructureProject {
         System.out.println("2 - Search for a Register"); // Submenu option with the avaiable indexes
         System.out.println("3 - Insert Register");
         System.out.println("4 - Remove Register");
+        System.out.println("0 - Exit");
         Scanner scan = new Scanner(System.in);
-        //op = scan.nextInt();
-        op=4;
+        op = scan.nextInt();
+        //op=4;
         
         switch (op) {
+            case 0: 
+                break;
             case 1: {
                 manager.printIndexes(1);
                 break;
@@ -81,6 +84,7 @@ public class FileStructureProject {
                 Scanner in = new Scanner(System.in);
                 String key = in.next();
                 manager.removeRegister(key);
+                break;
             }
 
             default:

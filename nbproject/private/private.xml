@@ -5,7 +5,7 @@
             <url>src/filestructureproject/FileStructureProject.java</url>
             <bookmark id="1">
                 <name/>
-                <line>62</line>
+                <line>64</line>
                 <key/>
             </bookmark>
         </file>
@@ -14,7 +14,6 @@
         <group>
             <file>file:/C:/Users/rodri/OneDrive/Documentos/NetBeansProjects/FileStructureProject/src/filestructureproject/FileManager.java</file>
             <file>file:/C:/Users/rodri/OneDrive/Documentos/NetBeansProjects/FileStructureProject/src/filestructureproject/FileStructureProject.java</file>
-            <file>file:/C:/Users/rodri/OneDrive/Documentos/NetBeansProjects/FileStructureProject/src/filestructureproject/createfile/FileCreator.java</file>
         </group>
     </open-files>
 </project-private>
