@@ -87,7 +87,6 @@ public class FileManager {
     }
     
     public String searchRegisterByPK(String key) {
-        //long startTime = System.currentTimeMillis();
         File dir = new File(new File("").getAbsolutePath());
 
         try {
@@ -108,18 +107,15 @@ public class FileManager {
                 String pk = line.substring(0, 50).trim();
                 if (key.compareTo(pk) < 0) {
                     end = mid - 64;
-                    //System.out.println("1!");
                 } else if (key.equalsIgnoreCase(pk)) {
                     // 52 because of the pipe '|'
                     String address = line.substring(52).trim();
                     String returnRegister = getRegister(address);
                     System.out.println(returnRegister);
-                    //System.out.println("2!");
                     start = end+1; // just to finish the while loop
                     return address;
                 } else {
                     start = mid + 64;
-                    //System.out.println("3!");
                 }
 
             }
@@ -128,8 +124,6 @@ public class FileManager {
             e.printStackTrace();
         }
 
-        // execução do método
-        //System.out.println("PrimaryIndex: The method took " + (System.currentTimeMillis() - startTime) + " seconds.");
         return "";
 
     }
@@ -155,7 +149,6 @@ public class FileManager {
     }
 
     public void searchRegister(int indexPos, String value) {
-        //long startTime = System.currentTimeMillis();
         File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes");
         
         try {
@@ -194,12 +187,9 @@ public class FileManager {
             e.printStackTrace();
         }
         
-        //System.out.println("SecondaryIndex: The method took " + (System.currentTimeMillis() - startTime) + " seconds.");
-
     }
     
     private void searchInInvertedList(int indexPos, String rrn) {
-        //long startTime = System.currentTimeMillis();
         File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes");
         
         try {
@@ -221,7 +211,6 @@ public class FileManager {
             e.printStackTrace();
         }
         
-        //System.out.println("InvertedList: The method took " + (System.currentTimeMillis() - startTime) + " seconds.");
     }
 
     public String[] getFields() {
@@ -568,16 +557,16 @@ public class FileManager {
     }
     
     public void removeRegister(String key) {
-        System.out.println("Register to be removed: ");
+        System.out.print("Register to be removed: ");
         String address = searchRegisterByPK(key);
         
         if (address.isEmpty()) {
             System.out.println("Register not found!");
         } else {
             String register = getRegister(address);
+            //System.out.println(register);
             String removedRegister = "%" + register.substring(1);
-            System.out.println("removedRegister: " + removedRegister);
-
+            
             File dir = new File(new File("").getAbsolutePath());
             // replace the old register by its "removed version" in file1.txt
             try {
@@ -645,12 +634,10 @@ public class FileManager {
     }
     
     private void removeFromSecondaryIndexFile(String register) {
-        System.out.println(register);
         String[] values = register.split("\\|");
         for (int i=1; i<values.length; i++) {
             File dir = new File(new File("").getAbsolutePath() + "/SecondaryIndexes" + "/" + fields[i] + ".txt");
-            values[i] = FileCreator.fillString(values[i], 50).trim();   
-            System.out.println("value: " + values[i]);
+            values[i] = FileCreator.fillString(values[i], 50).trim(); 
             try {
                 RandomAccessFile file = new RandomAccessFile(dir, "rw");
                 //System.out.println("file size: " + file.length());
@@ -668,13 +655,11 @@ public class FileManager {
                     file.seek(mid);
                     String line = file.readLine();
                     String pk = line.substring(0, 50).trim();
-                    System.out.println("pk: " + pk);
                     if (values[i].compareTo(pk) < 0) {
                         end = mid - 64;
                     } else if (values[i].equalsIgnoreCase(pk)) {
                         // 52 because of the pipe '|'
                         String rrn = line.substring(52).trim();
-                        System.out.println("I've been here!");
                         int pos = removeFromInvertedList(i, rrn, values[0]);
                         if (pos == -1) {
                             // Remove the register here
@@ -743,7 +728,6 @@ public class FileManager {
             String value = line.substring(0, 50).trim();
             String next = line.substring(52).trim();
             
-            System.out.println("key: " + key + " value: " + value);
             if (!next.equals("-1")) {
                 //Remove here
                 // need to find the given key
