@@ -5,8 +5,6 @@
  */
 package filestructureproject.createfile;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -16,7 +14,6 @@ public class SecondaryIndex implements Comparable<SecondaryIndex> {
     
     private String value;
     private int rrn;
-    //private List<Long> invertedList;
     
     public SecondaryIndex() {
         //invertedList = new ArrayList<>();
@@ -43,19 +40,9 @@ public class SecondaryIndex implements Comparable<SecondaryIndex> {
     public void setValue(String value) {
         this.value = value;
     }
-    
-    public void addToInvertedList(long primaryKey) {
-        //invertedList.add(primaryKey);
-    }
-    
-    public List<Long> getInvertedList() {
-        //return invertedList;
-        return null;
-    }
 
     @Override
     public int compareTo(SecondaryIndex o) {
-        //System.out.println("this.value: " + this.value + " o.value = " + o.getValue());
         return this.value.compareTo(o.getValue());
     }
 
@@ -68,8 +55,6 @@ public class SecondaryIndex implements Comparable<SecondaryIndex> {
             return false;
         }
     }
-    
-    
     
     
 }

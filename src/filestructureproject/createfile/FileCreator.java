@@ -12,13 +12,9 @@ import java.io.IOException;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
-import static java.util.Collections.list;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -29,9 +25,8 @@ public class FileCreator {
     private String filename = "";
     private TreeMap<String, Integer> primaryIndex;
     private PFile file;
-    private List<List<SecondaryIndex>> secondaryIndexList; // String(Field) / Integer(RRN)
+    private List<List<SecondaryIndex>> secondaryIndexList; 
     private List<List<SecondaryIndex>> invertedList;
-    //private List<TreeMap<Long, Integer>> invertedList; // Long(PrimaryKey) / Integer("Next")
     
     public FileCreator() {
         primaryIndex = new TreeMap<>();
