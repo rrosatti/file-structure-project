@@ -1,6 +1,7 @@
-Design e avaliao de interfaces humano-computador   |0         
+Design e avaliacao de interfaces humano-computador |0         
+outro titulo                                       |6         
 Overview of the Brazilian Computer Societys Council|2         
 Research methods in human-computer interaction     |1         
 Scenario and Task Based Interview to Evaluate Usabi|3         
 Semiotic engineering methods for scientific researc|4         
-Usability in Brazil                                |5         
+teste                                              |5         
